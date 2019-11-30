@@ -51,6 +51,10 @@ func (h *rreflectorHandler) ServeDNS(_ context.Context, w dns.ResponseWriter, r 
 		return dns.RcodeNameError, nil
 	}
 
+	if h.host != "" {
+		joiner = "."
+	}
+
 	var reversedAddrParts []string
 	for i := len(addrParts) - 1; i >= 0; i-- {
 		reversedAddrParts = append(reversedAddrParts, addrParts[i])
