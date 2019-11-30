@@ -1,4 +1,4 @@
-module coredns-rreflector
+module github.com/formerandroider/coredns-rreflector
 
 go 1.13
 
