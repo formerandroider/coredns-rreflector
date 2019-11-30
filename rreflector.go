@@ -28,7 +28,7 @@ func (h *rreflectorHandler) ServeDNS(_ context.Context, w dns.ResponseWriter, r 
 	log.Infof("parsing qname %s", name)
 	parts := strings.Split(name[:len(name)-2], ".")
 	arpaHost := parts[len(parts)-2]
-	log.Debugf("arpa host: %s", name)
+	log.Debugf("arpa host: %s", arpaHost)
 	addrParts := parts[:len(parts)-2]
 	log.Debugf("address parts: %v", addrParts)
 
