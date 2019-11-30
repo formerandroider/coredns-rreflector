@@ -64,7 +64,7 @@ func (h *rreflectorHandler) ServeDNS(_ context.Context, w dns.ResponseWriter, r 
 		Rrtype: dns.TypePTR,
 		Class:  state.QClass(),
 	}
-	ptr.Ptr = strings.Join(reversedAddrParts, joiner) + h.host + "."
+	ptr.Ptr = strings.Join(reversedAddrParts, joiner) + "." + h.host + "."
 
 	a.Answer = []dns.RR{ptr}
 	a.Rcode = dns.RcodeSuccess
