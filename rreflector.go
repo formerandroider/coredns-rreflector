@@ -19,17 +19,18 @@ func newRReflectorHandler() *rreflectorHandler {
 }
 
 func (h *rreflectorHandler) ServeDNS(_ context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
-	log.Debug("Received response")
 	state := request.Request{
 		Req: r,
 		W:   w,
 	}
 
 	name := state.Name()
-	log.Debugf("Name: %s", name)
+	log.Infof("parsing qname %s", name)
 	parts := strings.Split(name[:len(name)-2], ".")
 	arpaHost := parts[len(parts)-2]
+	log.Debugf("arpa host: %s", name)
 	addrParts := parts[:len(parts)-2]
+	log.Debugf("address parts: %v", addrParts)
 
 	a := &dns.Msg{}
 	a.SetReply(r)
@@ -39,24 +40,23 @@ func (h *rreflectorHandler) ServeDNS(_ context.Context, w dns.ResponseWriter, r 
 	switch arpaHost {
 	case "ip6":
 		joiner = ":"
-		log.Debug("IPv6 address")
+		log.Debug("detected ipv6 lookup")
 	case "in-addr":
 		joiner = "."
-		log.Debug("IPv4 address")
+		log.Debug("detected ipv4 lookup")
 	default:
+		log.Error("rreflector plugin called for non-rDNS lookup")
 		a.Rcode = dns.RcodeNameError
 		w.WriteMsg(a)
 		return dns.RcodeNameError, nil
 	}
-
-	log.Debugf("Address parts: %v", addrParts)
 
 	var reversedAddrParts []string
 	for i := len(addrParts) - 1; i >= 0; i-- {
 		reversedAddrParts = append(reversedAddrParts, addrParts[i])
 	}
 
-	log.Debugf("PTR2: %s", strings.Join(reversedAddrParts, joiner))
+	log.Infof("original address: %s", strings.Join(reversedAddrParts, joiner))
 
 	ptr := new(dns.PTR)
 	ptr.Hdr = dns.RR_Header{
